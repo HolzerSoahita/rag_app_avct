@@ -55,6 +55,25 @@ for i, (file_name, index_id) in enumerate(st.session_state['file_list']):
     button2 = col2.button('delete', key=f"trash_button_{i}",use_container_width=True)
 
 
+# Chat interface
+## st.title("ChatGPT-like clone")
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+if prompt := st.chat_input("Chatter ici"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        output_stream, sources = RagService.complete_chat(prompt, [], [st.session_state['current_index_id']])
+        response = st.write_stream(output_stream)
+    st.session_state.messages.append({"role": "assistant", "content": response})
+
 
 
 
