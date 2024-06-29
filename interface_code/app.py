@@ -32,6 +32,20 @@ st.markdown("""
 ## Sidebar title
 st.sidebar.title("Fichiers")
 
+### Modal dialog to show the summary of a book
+@st.experimental_dialog("Résumé")
+def vote(file_name,summary):
+    st.header("Fichier : ")
+    st.write(file_name)
+    st.header("Contenu : ")
+    st.write(summary)
+    st.header("Langue : ")
+    st.write("Français")
+
+### Show modal
+def show_dialog(file_name,summary):
+    vote(file_name,summary)
+
 ## Uploaded Button
 uploaded_file = st.sidebar.file_uploader("Ajouter votre fichier ici", type=['pdf', 'docx'])
 
@@ -62,6 +76,9 @@ if uploaded_file is not None:
     # Remove the temporary uploaded file
     os.remove(doc_path)
 
+    # Show the summary of the file
+    show_dialog(uploaded_file.name,summary)
+
 
 ##Files
 ### Function for deleting files
@@ -71,20 +88,6 @@ def delete_file(index_id):
     # Remove the corresponding entry from the session state
     st.session_state['file_list'] = [item for item in st.session_state['file_list'] if item[1] != index_id]
 
-
-### Modal dialog to show the summary of a book
-@st.experimental_dialog("Résumé")
-def vote(file_name,summary):
-    st.header("Fichier : ")
-    st.write(file_name)
-    st.header("Contenu : ")
-    st.write(summary)
-    st.header("Langue : ")
-    st.write("Français")
-
-### Show modal
-def show_dialog(file_name,summary):
-    vote(file_name,summary)
 
 ### Show all of the uploaded file
 for i, (file_name, index_id,summary) in enumerate(st.session_state['file_list']):
