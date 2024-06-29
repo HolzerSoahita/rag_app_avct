@@ -382,9 +382,10 @@ class _RagService:
         
         
         #2. Load the document
+        document_path = Path(document_path)
         document_list = self.parse_document(document_path)
         #First page
-        first_page_document = [k for k in document_list if k.page_label == '1']
+        first_page_document = [k for k in document_list if k.metadata['page_label'] == '1']
         first_page_content = first_page_document[0].text
         
         #3. Translate the document to french
