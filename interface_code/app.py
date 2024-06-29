@@ -47,12 +47,23 @@ if uploaded_file is not None:
     st.session_state['file_list'].append((uploaded_file.name,index_id))
     st.session_state['current_index_id'] = index_id
 
+    os.remove(doc_path)
 
-## Show all of the uploaded file
+
+##Files
+### Function for deleting files
+def delete_file(index_id):
+    # Remove the vectore store index
+    RagService.delete_vector_store_index(index_id)
+    # Remove the corresponding entry from the session state
+    st.session_state['file_list'] = [item for item in st.session_state['file_list'] if item[1] != index_id]
+
+
+### Show all of the uploaded file
 for i, (file_name, index_id) in enumerate(st.session_state['file_list']):
     col1, col2 = st.sidebar.columns(2)
     button1 = col1.button(file_name, key=f"button_{i}",use_container_width=True)
-    button2 = col2.button('delete', key=f"trash_button_{i}",use_container_width=True)
+    button2 = col2.button('delete', key=f"trash_button_{i}",use_container_width=True,on_click=lambda: delete_file(index_id))
 
 
 # Chat interface
