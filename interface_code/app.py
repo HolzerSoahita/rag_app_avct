@@ -12,6 +12,9 @@ if 'file_list' not in st.session_state:
 if 'current_index_id' not in st.session_state:
     st.session_state['current_index_id'] = ""
 
+if "uploader_key" not in st.session_state:
+    st.session_state["uploader_key"] = 1
+
 
 # custom CSS 
 
@@ -47,7 +50,7 @@ def show_dialog(file_name,summary):
     vote(file_name,summary)
 
 ## Uploaded Button
-uploaded_file = st.sidebar.file_uploader("Ajouter votre fichier ici", type=['pdf', 'docx'])
+uploaded_file = st.sidebar.file_uploader("Ajouter votre fichier ici", type=['pdf', 'docx'],key=st.session_state["uploader_key"])
 
 if uploaded_file is not None:
     # Creation of the upload folder
@@ -79,6 +82,10 @@ if uploaded_file is not None:
     # Show the summary of the file
     show_dialog(uploaded_file.name,summary)
 
+    # Clear the content of the st.sidebar.file_uploader
+    st.session_state["uploader_key"] += 1
+    st.rerun()
+
 
 ##Files
 ### Function for deleting files
@@ -93,7 +100,7 @@ def delete_file(index_id):
 for i, (file_name, index_id,summary) in enumerate(st.session_state['file_list']):
     col1, col2 = st.sidebar.columns(2)
     button1 = col1.button(file_name, key=f"button_{i}",use_container_width=True,on_click=lambda: show_dialog(file_name,summary))
-    button2 = col2.button('delete', key=f"trash_button_{i}",use_container_width=True,on_click=lambda: delete_file(index_id))
+    button2 = col2.button('🗑️', key=f"trash_button_{i}",use_container_width=True,on_click=lambda: delete_file(index_id))
 
 
 
