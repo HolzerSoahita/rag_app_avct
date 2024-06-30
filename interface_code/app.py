@@ -105,22 +105,46 @@ for i, (file_name, index_id,summary) in enumerate(st.session_state['file_list'])
 
 
 # Chat interface
-## st.title("ChatGPT-like clone")
+## Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+## Display the warning message only if there are no messages in the chat
+if not st.session_state.messages:
+    st.markdown("""
+        <style>
+        .center-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;  # Adjust this value as needed
+        }
+        </style>
+        <div class="center-content">
+            <h2>Attention!, ces textes sont générés par l'IA</h2>
+        </div>
+        """, unsafe_allow_html=True)
+    # st.markdown("<center><h2>Attention!, Ces chats sont générés par l'IA</h2></center>", unsafe_allow_html=True)
+
+## Display the chat messages
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+## Get user input
 if prompt := st.chat_input("Chatter ici"):
+
+    # Add user message to session state
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
+    # Generate AI response
     with st.chat_message("assistant"):
         output_stream, sources = RagService.complete_chat(prompt, [], [st.session_state['current_index_id']])
         response = st.write_stream(output_stream)
+
+    # Add AI response to session state
     st.session_state.messages.append({"role": "assistant", "content": response})
 
 
