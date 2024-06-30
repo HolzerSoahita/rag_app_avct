@@ -156,6 +156,11 @@ if prompt := st.chat_input("Chatter ici") :
 
         # Add AI response to session state
         st.session_state.messages.append({"role": "assistant", "content": response})
+
+        # Add a button to display the source
+        text = f"Source : {sources[0].text}"
+        st.markdown(text)
+
     else:
         # Test si il y a déjà ajout de document
         show_dialog_warning_file()
