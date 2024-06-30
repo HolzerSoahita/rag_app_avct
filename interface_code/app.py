@@ -131,21 +131,34 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+### Modal dialog to say to add file
+@st.experimental_dialog("Fichier manquant")
+def warning_file():
+    st.write("Ajouter un fichier PDF ou docx pour pouvoir commencer à chatter")
+
+
+### Show modal warning file
+def show_dialog_warning_file():
+    warning_file()
+
 ## Get user input
-if prompt := st.chat_input("Chatter ici"):
+if prompt := st.chat_input("Chatter ici") :
+    if st.session_state['current_index_id'] != "" :
+        # Add user message to session state
+        st.session_state.messages.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.markdown(prompt)
 
-    # Add user message to session state
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt)
+        # Generate AI response
+        with st.chat_message("assistant"):
+            output_stream, sources = RagService.complete_chat(prompt, [], [st.session_state['current_index_id']])
+            response = st.write_stream(output_stream)
 
-    # Generate AI response
-    with st.chat_message("assistant"):
-        output_stream, sources = RagService.complete_chat(prompt, [], [st.session_state['current_index_id']])
-        response = st.write_stream(output_stream)
-
-    # Add AI response to session state
-    st.session_state.messages.append({"role": "assistant", "content": response})
+        # Add AI response to session state
+        st.session_state.messages.append({"role": "assistant", "content": response})
+    else:
+        # Test si il y a déjà ajout de document
+        show_dialog_warning_file()
 
 
 
